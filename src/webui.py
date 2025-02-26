@@ -1,10 +1,10 @@
 import json
 import time
 import gradio as gr
-from web.utils.monitor import TrainingMonitor
-from web.train_tab import create_train_tab
-from web.eval_tab import create_inference_tab
-from web.download_tab import create_download_tab
+from .web.utils.monitor import TrainingMonitor
+from .web.train_tab import create_train_tab
+from .web.eval_tab import create_inference_tab
+from .web.download_tab import create_download_tab
 
 def load_constant():
     """Load constant values from config files"""
@@ -41,16 +41,17 @@ def create_ui():
                 download_components = create_download_tab(constant)
             except Exception as e:
                 gr.Markdown(f"Error creating UI components: {str(e)}")
-                return
+                train_components = {"output_text": None, "plot_output": None}
         
-        demo.load(
-            fn=update_output,
-            inputs=None,
-            outputs=[
-                train_components["output_text"], 
-                train_components["plot_output"]
-            ]
-        )
+        if train_components["output_text"] is not None and train_components["plot_output"] is not None:
+            demo.load(
+                fn=update_output,
+                inputs=None,
+                outputs=[
+                    train_components["output_text"], 
+                    train_components["plot_output"]
+                ]
+            )
         
     return demo
 
